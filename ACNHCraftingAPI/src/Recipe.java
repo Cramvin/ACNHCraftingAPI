@@ -43,20 +43,46 @@ public class Recipe {
 		this.name = input;
 	}
 	
-	public String[] getCraftingMaterial() { // gets material for what is crafted
+	public String[] getCraftingMaterials() { // gets materials for what is crafted
 		return material;
 	}
 	
-	public void setCraftingMaterial(String[] input) { // sets material for what is crafted
+	public void setCraftingMaterials(String[] input) { // sets materials for what is crafted
 		this.material = input;
 	}
 	
-	public int[] getCraftingMaterialCount() { // gets count for materials for what is crafted
+	public boolean isCraftingMaterial(String materialName) { // checks if materialName is material for recipe
+		for(int i = 0; i < material.length; i++)
+			if(material[i].equals(materialName)) {
+				return true;
+			}
+		return false;
+	}
+	
+	public int[] getCraftingMaterialCounts() { // gets count for materials for what is crafted
 		return materialCount;
 	}
 	
-	public void setCraftingMaterialCount(int[] input) { // sets count for materials for what is crafted
+	public void setCraftingMaterialCounts(int[] input) { // sets count for materials for what is crafted
 		this.materialCount = input;
+	}
+	
+	public int getCraftingMaterialCount(String materialName) { // gets count for material for recipe
+		int id = 0;
+		for(int i = 0; i < material.length; i++)
+			if(material[i].equals(materialName)) {
+				id = i; break;
+			}
+		return materialCount[id];
+	}
+	
+	public void setCraftingMaterialCount(String materialName, int input) { // sets count for material for recipe
+		int id = 0;
+		for(int i = 0; i < material.length; i++)
+			if(material[i].equals(materialName)) {
+				id = i; break;
+			}
+		this.materialCount[id] = input;
 	}
 	
 }
