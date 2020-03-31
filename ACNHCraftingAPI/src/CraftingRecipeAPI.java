@@ -6,101 +6,45 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CraftingRecipeAPI {
 	
 	static File recipesFile = new File("recipes/recipes.txt"); // holds every name of items that can be crafted
-	static List<String> recipes = new ArrayList<String>(); // used for checking if exists and creating recipes
+	static List<Recipe> recipes = new ArrayList<Recipe>(); // list of all recipes used for checking if exists and creating recipes
 	static File resourcesFile = new File("recipes/resources.txt"); // holds every name of items that are ingredients
 	static List<String> resources = new ArrayList<String>(); // used for creating recipes
-	
-	static List<String> materials = new ArrayList<String>(); // holds every material that is used for the current recipe
-	static List<Integer> countMaterial = new ArrayList<Integer>(); // how much material is used for the current recipe
 
-	static void saveRecipe(String recipeName) throws IOException {
+	static void saveRecipe(String recipeName) { // saves a specific recipe from the recipes list
 		
-		recipes.add(recipeName);
-		FileWriter fw = new FileWriter(recipesFile);
-		BufferedWriter bw = new BufferedWriter(fw);
-		for(String recipe : recipes) {
-			bw.write(recipe);
-			bw.newLine();
+		for(Recipe recipe : recipes) {
+			if(recipe.getName().equals(recipeName))
+				recipe.save();
 		}
-		bw.close();
 		
-		File recipe = new File("recipes/recipes/"+recipeName+".txt");
-		FileWriter fw2 = new FileWriter(recipe);
-		BufferedWriter bw2 = new BufferedWriter(fw2);
-		
-		String[] material = materials.toArray(new String[materials.size()]);
-		Integer[] materialCount = countMaterial.toArray(new Integer[countMaterial.size()]);
-		
-		for(int i = 0; i < material.length; i++)
-			for(int j = 0; j < materialCount[i]; j++) {
-				bw2.write(material[i]);
-				bw2.newLine();
-			}	
-		
-		bw2.close();
-		materials = new ArrayList<String>();
-		countMaterial = new ArrayList<Integer>();
 	}
 
-	static void newRecipe() {
+	static void newRecipe(String name, int outputCount, String[] material, int[] materialCount) { // creates a new recipe and saves it
 		
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Wie heisst das Item, fuer das ein Rezept erstellt werden soll?");
-		String recipeName = scan.next();
-		System.out.println("Ist das Item \"" + recipeName + "\" richtig geschrieben?(y/n)");
-		if(scan.next().equals("n")) {
-			newRecipe();
-			scan.close();
-			return;
-		}
-		
-		boolean wantContinue = false;
-		do{
-
-			System.out.println("Wie heisst das Material?");
-			String materialName = scan.next();
-			String correction = getAutoCorrection(materialName);
-			if(correction != null) {
-				System.out.println("Das Material \"" + materialName + "\" existiert nicht, soll stattdessen \"" + correction + "\" genutzt werden?(y/n)");
-				if(scan.next().equals("y"))
-					materialName = correction;
-				else {
-					newRecipe();
-					scan.close();
-					return;
-				}
-			}
-			System.out.println("Wie viel davon wird benoetigt?");
-			int count = Integer.parseInt(scan.next());
-			
-			materials.add(materialName);
-			countMaterial.add(count);
-			
-			System.out.println("Besitzt das Rezept noch mehr Materialien?(y/n)");
-			if(scan.next().equals("y")) {
-				wantContinue = true;
-			} else
-				wantContinue = false;
-		} while(wantContinue);
-
+		recipes.add(new Recipe(name, material, materialCount));
+		saveRecipe(name);
 		try {
-			saveRecipe(recipeName);
+			FileWriter fw = new FileWriter(recipesFile);
+			BufferedWriter bw = new BufferedWriter(fw);
+			for(Recipe recipe : recipes) {
+				bw.write(recipe.getName());
+				bw.newLine();
+			}
+			bw.close();
 		} catch (IOException e) {
-			System.out.println("Beim speichern des Rezeptes ist ein Fehler aufgetreten:" + e.toString());
+			System.out.println("It was not possible to create an entry for " + name + ": " + e.toString());
 		}
-		newRecipe();
-		scan.close();
+		
 	}
 
-	static String getAutoCorrection(String arg) {
+	static String getAutoCorrection(String arg) { // checks if there is an item with this name or corrects it
 		
-		for(String recipe : recipes)
-			if(recipe.equals(arg)) {
+		for(Recipe recipe : recipes)
+			if(recipe.getName().equals(arg)) {
 				return null;
 			}
 		for(String resource : resources)
@@ -118,11 +62,11 @@ public class CraftingRecipeAPI {
 		
 	}
 	
-	static String getAutoCorrectionRecipes(String arg, String closestEntry) {
+	static String getAutoCorrectionRecipes(String arg, String closestEntry) {  // checks if there is a recipe with this name or corrects it
 		
 		int closestLetterCount = 0;
-		for(String recipe : recipes) {
-			char[] charsRecipe = recipe.toCharArray();
+		for(Recipe recipe : recipes) {
+			char[] charsRecipe = recipe.getName().toCharArray();
 			char[] charsArg = arg.toCharArray();
 			int count = 0;
 			int counting = charsRecipe.length > charsArg.length ? charsArg.length : charsRecipe.length;
@@ -130,14 +74,14 @@ public class CraftingRecipeAPI {
 				count += countUp(i, charsArg, charsRecipe);
 			if(count > closestLetterCount) {
 				closestLetterCount = count;
-				closestEntry = recipe;
+				closestEntry = recipe.getName();
 			}
 		}
 		return closestEntry;
 		
 	}
 	
-	static String getAutoCorrectionResources(String arg, String closestEntry) {
+	static String getAutoCorrectionResources(String arg, String closestEntry) {  // checks if there is a resource with this name or corrects it
 		
 		int closestLetterCount = 0;
 		for(String resource : resources) {
@@ -156,7 +100,7 @@ public class CraftingRecipeAPI {
 		
 	}
 
-	private static int countUp(int i, char[] charsArg, char[] charsR) {
+	private static int countUp(int i, char[] charsArg, char[] charsR) { // needed for the auto correction
 		int count = 0;
 		if(charsArg[i] == charsR[i])
 			count++;
@@ -171,36 +115,70 @@ public class CraftingRecipeAPI {
 		return count;
 	}
 
-	static void getResources() throws IOException {
+	static void getResources() { // gets all the names for resources
 		
 		if(!resourcesFile.exists()) {
-			System.out.println("Im ordner \"recipes\" wird eine Datei \"recources.txt\" erwartet!");
+			System.out.println("File \"recipes/recources.txt\" not found!");
 			System.exit(0);
 		}else {
-			FileReader fr = new FileReader(resourcesFile);
-			BufferedReader br = new BufferedReader(fr);
-			String read = "";
-			while((read = br.readLine()) != null)
-				resources.add(read);
-			br.close();
+			try {
+				FileReader fr = new FileReader(resourcesFile);
+				BufferedReader br = new BufferedReader(fr);
+				String read = "";
+				while((read = br.readLine()) != null)
+					resources.add(read);
+				br.close();
+			} catch (IOException e) {
+				System.out.println("Could not load resources properly: " + e.toString());
+			}
 		}
 		
 	}
 
-	static void getRecipes() throws IOException {
+	static void getRecipes() { // gets all recipes
 
-		if(!recipesFile.exists())
-			recipesFile.createNewFile();
-		else {
-			FileReader fr = new FileReader(recipesFile);
-			BufferedReader br = new BufferedReader(fr);
-			String read;
-			while((read = br.readLine()) != null)
-				recipes.add(read);
-			br.close();
-		}
+		if(recipesFile.exists()) 
+			try {
+				FileReader fr = new FileReader(recipesFile);
+				BufferedReader br = new BufferedReader(fr);
+				String read;
+				while((read = br.readLine()) != null) { // for every recipe...
+					File recipeFile = new File("recipes/recipes/" + read + ".recipe");
+					FileReader fr2 = new FileReader(recipeFile);
+					BufferedReader br2 = new BufferedReader(fr2);
+					
+					List<String> material = new ArrayList<String>();
+					List<Integer> materialCount = new ArrayList<Integer>(); 
+					String read2; 
+					int count = 0;
+					
+					while((read2 = br2.readLine()) != null) { // ...go through all materials and counts...
+						if(material.contains(read2)) {
+							count++;
+						} else {
+							material.add(read2);
+							if(count != 0) {
+								materialCount.add(count);
+								count = 0;
+							}
+							count++;
+						}
+					}
+					materialCount.add(count);
+					
+					int[] materialCountArray = new int[materialCount.size()];
+					int i = 0;
+					for(Integer materialC : materialCount) {
+						materialCountArray[i] = materialC; i++;
+					}
+					recipes.add(new Recipe(read, material.toArray(new String[material.size()]), materialCountArray)); // ...and finally save it
+					br2.close();
+				}
+				br.close();
+			} catch (IOException e) {
+				System.out.println("Could not load recipes properly: " + e.toString());
+			}
 			
-		
 	}
 	
 }
