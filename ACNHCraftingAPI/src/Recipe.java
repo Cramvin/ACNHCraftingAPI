@@ -10,7 +10,7 @@ public class Recipe {
 	private String[] material;
 	private int[] materialCount; 
 	
-	public Recipe(String itemToCraft, String[] craftingMaterial, int[] materialCount) {
+	public Recipe(String itemToCraft, String[] craftingMaterial, int[] materialCount) { // creates new recipe holder
 		this.file = new File("recipes/recipes/" + name + ".recipe");
 		this.name = itemToCraft;
 		this.material = craftingMaterial;
@@ -33,27 +33,27 @@ public class Recipe {
 		}
 	}
 	
-	public String getName() {
+	public String getName() { // gets item name for what is crafted
 		return name;
 	}
 	
-	public void setName(String input) {
+	public void setName(String input) { // sets item name for what is crafted
 		this.name = input;
 	}
 	
-	public String[] getCraftingMaterial() {
+	public String[] getCraftingMaterial() { // gets material for what is crafted
 		return material;
 	}
 	
-	public void setCraftingMaterial(String[] input) {
+	public void setCraftingMaterial(String[] input) { // sets material for what is crafted
 		this.material = input;
 	}
 	
-	public int[] getCraftingMaterialCount() {
+	public int[] getCraftingMaterialCount() { // gets count for materials for what is crafted
 		return materialCount;
 	}
 	
-	public void setCraftingMaterialCount(int[] input) {
+	public void setCraftingMaterialCount(int[] input) { // sets count for materials for what is crafted
 		this.materialCount = input;
 	}
 	
