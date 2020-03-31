@@ -11,7 +11,7 @@ public class Recipe {
 	private int[] materialCount; 
 	
 	public Recipe(String itemToCraft, String[] craftingMaterial, int[] materialCount) { // creates new recipe holder
-		this.file = new File("recipes/recipes/" + name + ".recipe");
+		this.file = new File("recipes/recipes/" + itemToCraft + ".recipe");
 		this.name = itemToCraft;
 		this.material = craftingMaterial;
 		this.materialCount = materialCount;
@@ -19,6 +19,8 @@ public class Recipe {
 	
 	public void save(){ //saves recipe if needed
 		try {
+			if(!file.exists())
+				file.createNewFile();
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
 			for(int i = 0; i < material.length; i++) {
