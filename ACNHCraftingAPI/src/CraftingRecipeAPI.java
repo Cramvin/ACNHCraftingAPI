@@ -19,6 +19,37 @@ public class CraftingRecipeAPI {
 		getRecipes();
 	}
 	
+	boolean isMaterialOf(String itemName, String materialName) { // checks if material is in recipe
+		
+		int id = -1;
+		for(int i = 0; i < recipes.size(); i++)
+			if(recipes.get(i).getName().equals(itemName)) {
+				id = i; break;
+			}
+		return recipes.get(id).isCraftingMaterial(materialName);
+		
+	}
+	
+	boolean isRecipe(String itemName) { // checks if item is a recipe
+		
+		for(int i = 0; i < recipes.size(); i++)
+			if(recipes.get(i).getName().equals(itemName)) {
+				return true;
+			}
+		return false;
+		
+	}
+	
+	boolean isResource(String itemName) { // checks if item is a resource
+		
+		for(int i = 0; i < recipes.size(); i++)
+			if(resources.get(i).equals(itemName)) {
+				return true;
+			}
+		return false;
+		
+	}
+	
 	String[] getMaterialsOf(String itemName) { // gets the count of a material in a recipe
 		
 		int id = -1;
