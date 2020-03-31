@@ -9,12 +9,17 @@ import java.util.List;
 
 public class CraftingRecipeAPI {
 	
-	static File recipesFile = new File("recipes/recipes.txt"); // holds every name of items that can be crafted
-	static List<Recipe> recipes = new ArrayList<Recipe>(); // list of all recipes used for checking if exists and creating recipes
-	static File resourcesFile = new File("recipes/resources.txt"); // holds every name of items that are ingredients
-	static List<String> resources = new ArrayList<String>(); // used for creating recipes
+	private File recipesFile = new File("recipes/recipes.txt"); // holds every name of items that can be crafted
+	private List<Recipe> recipes = new ArrayList<Recipe>(); // list of all recipes used for checking if exists and creating recipes
+	private File resourcesFile = new File("recipes/resources.txt"); // holds every name of items that are ingredients
+	private List<String> resources = new ArrayList<String>(); // used for creating recipes
 
-	static void saveRecipe(String recipeName) { // saves a specific recipe from the recipes list
+	public CraftingRecipeAPI() {
+		getResources();
+		getRecipes();
+	}
+	
+	private void saveRecipe(String recipeName) { // saves a specific recipe from the recipes list
 		
 		for(Recipe recipe : recipes) {
 			if(recipe.getName().equals(recipeName))
@@ -23,7 +28,7 @@ public class CraftingRecipeAPI {
 		
 	}
 
-	static void newRecipe(String name, int outputCount, String[] material, int[] materialCount) { // creates a new recipe and saves it
+	void newRecipe(String name, String[] material, int[] materialCount) { // creates a new recipe and saves it
 		
 		recipes.add(new Recipe(name, material, materialCount));
 		saveRecipe(name);
@@ -41,7 +46,7 @@ public class CraftingRecipeAPI {
 		
 	}
 
-	static String getAutoCorrection(String arg) { // checks if there is an item with this name or corrects it
+	String getAutoCorrection(String arg) { // checks if there is an item with this name or corrects it
 		
 		for(Recipe recipe : recipes)
 			if(recipe.getName().equals(arg)) {
@@ -62,7 +67,7 @@ public class CraftingRecipeAPI {
 		
 	}
 	
-	static String getAutoCorrectionRecipes(String arg, String closestEntry) {  // checks if there is a recipe with this name or corrects it
+	String getAutoCorrectionRecipes(String arg, String closestEntry) {  // checks if there is a recipe with this name or corrects it
 		
 		int closestLetterCount = 0;
 		for(Recipe recipe : recipes) {
@@ -81,7 +86,7 @@ public class CraftingRecipeAPI {
 		
 	}
 	
-	static String getAutoCorrectionResources(String arg, String closestEntry) {  // checks if there is a resource with this name or corrects it
+	String getAutoCorrectionResources(String arg, String closestEntry) {  // checks if there is a resource with this name or corrects it
 		
 		int closestLetterCount = 0;
 		for(String resource : resources) {
@@ -100,7 +105,7 @@ public class CraftingRecipeAPI {
 		
 	}
 
-	private static int countUp(int i, char[] charsArg, char[] charsR) { // needed for the auto correction
+	private int countUp(int i, char[] charsArg, char[] charsR) { // needed for the auto correction
 		int count = 0;
 		if(charsArg[i] == charsR[i])
 			count++;
@@ -115,7 +120,7 @@ public class CraftingRecipeAPI {
 		return count;
 	}
 
-	static void getResources() { // gets all the names for resources
+	private void getResources() { // gets all the names for resources
 		
 		if(!resourcesFile.exists()) {
 			System.out.println("File \"recipes/recources.txt\" not found!");
@@ -135,7 +140,7 @@ public class CraftingRecipeAPI {
 		
 	}
 
-	static void getRecipes() { // gets all recipes
+	private void getRecipes() { // gets all recipes
 
 		if(recipesFile.exists()) 
 			try {
