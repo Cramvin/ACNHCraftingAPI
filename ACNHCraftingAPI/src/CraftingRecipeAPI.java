@@ -19,6 +19,17 @@ public class CraftingRecipeAPI {
 		getRecipes();
 	}
 	
+	int getCountOfMaterial(String itemName, String materialName) { // gets the count of a material in a recipe
+		
+		int id = -1;
+		for(int i = 0; i < recipes.size(); i++)
+			if(recipes.get(i).getName().equals(itemName)) {
+				id = i; break;
+			}
+		return recipes.get(id).getCraftingMaterialCount(materialName);
+		
+	}
+	
 	private void saveRecipe(String recipeName) { // saves a specific recipe from the recipes list
 		
 		for(Recipe recipe : recipes) {

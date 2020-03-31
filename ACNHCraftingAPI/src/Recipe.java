@@ -68,21 +68,27 @@ public class Recipe {
 	}
 	
 	public int getCraftingMaterialCount(String materialName) { // gets count for material for recipe
-		int id = 0;
+		int id = -1;
 		for(int i = 0; i < material.length; i++)
 			if(material[i].equals(materialName)) {
 				id = i; break;
 			}
-		return materialCount[id];
+		if(id < 0)
+			return 0;
+		else
+			return materialCount[id];
 	}
 	
 	public void setCraftingMaterialCount(String materialName, int input) { // sets count for material for recipe
-		int id = 0;
+		int id = -1;
 		for(int i = 0; i < material.length; i++)
 			if(material[i].equals(materialName)) {
 				id = i; break;
 			}
-		this.materialCount[id] = input;
+		if(id < 0)
+			System.out.println("There is no item \"" + materialName + "\" in recipe \"" + name + "\"!");
+		else
+			this.materialCount[id] = input;
 	}
 	
 }
